@@ -1,4 +1,3 @@
-import numpy as np
 import time
 from BeautifulSoup import BeautifulSoup
 from dateutil.parser import *
@@ -7,28 +6,6 @@ import json
 
 def remove_values_from_list(the_list, val):
     return [value for value in the_list if value != val]
-
-
-class Message:
-    def __init__(self, author, time_sent, data):
-        self.author = author
-        self.time = time_sent
-        self.data = data
-
-    def print_message(self):
-        print self.author, ': ', self.data
-        return
-
-
-class MessageThread:
-    def __init__(self, people):
-        self.messages = []
-        self.people = people
-        return
-
-    def add(self, m):
-        self.messages.append(m)
-        return
 
 html_file_name = 'D://Facebook/2016-01-28/html/messages.htm'
 json_file_name = 'D://Facebook/2016-01-28/json/messages.json'
@@ -44,7 +21,9 @@ t0 = time.time()
 for i, mThread in enumerate(docData.findAll("div", attrs={"class": "thread"})):
     mThreadContents = remove_values_from_list(mThread.contents, '\n')
     # Create the MessageThread, if necessary
-    people = mThreadContents[0]
+    people = str(mThreadContents[0])
+    # Format the title string
+    people = people[0:people.find('\n')]
     message_thread = []
     for j in range(1, len(mThreadContents), 2):
         message = {}
@@ -73,7 +52,7 @@ for i, mThread in enumerate(docData.findAll("div", attrs={"class": "thread"})):
         allMessages[people] = message_thread
     else:
         tmp_list = allMessages[people]
-        tmp_list += message_thread
+        tmp_list = message_thread + tmp_list
         allMessages[people] = tmp_list
 
 t1 = time.time()
